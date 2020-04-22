@@ -79,7 +79,7 @@ def imshow(bboxes, labels, probs,ids,count):
             real_y_min = int(bbox[1])
             real_x_max = int(bbox[2])
             real_y_max = int(bbox[3])
-            # 在每一帧上画矩形，frame帧,(四个坐标参数),（颜色）,宽度
+            # Draw rectangle on each frame, frame frame, (four coordinate parameters), (color), width
             cv2.rectangle(frame, (real_x_min, real_y_min), (real_x_max, real_y_max), (0, 255, 255),
                           4)  # 红色
             cv2.putText(frame, index2class()[str(lable)].split("(")[0] + ':' + str(round(p, 2)),
@@ -90,6 +90,8 @@ def imshow(bboxes, labels, probs,ids,count):
                         (real_x_min + 10, real_y_min + 20),
                         cv2.FONT_HERSHEY_COMPLEX, \
                         0.5, (0, 255, 255), 1, False)
+
+        #you can change the output folder for saving the frames
         cv2.imwrite('/content/SlowFast-Network-pytorch/outputs/frames/%d.jpg' % count, frame)
 
 def arg_parse():
@@ -100,16 +102,21 @@ def arg_parse():
     
     
     parser = argparse.ArgumentParser(description='YOLO v3 Video Detection Module')
-   
+   	
+   	#change the video path accordingly
     parser.add_argument("--video", dest = 'video', help = 
                         "Video to run detection upon",
                         default = "/content/SlowFast-Network-pytorch/new.mp4", type = str)
     parser.add_argument("--dataset", dest = "dataset", help = "Dataset on which the network has been trained", default = "pascal")
     parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.5)
     parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
+    
+    #change the path accordingly
     parser.add_argument("--cfg", dest = 'cfgfile', help = 
                         "Config file",
                         default = "/content/SlowFast-Network-pytorch/cfg/yolov3.cfg", type = str)
+    
+    #change the path accordingly
     parser.add_argument("--weights", dest = 'weightsfile', help = 
                         "weightsfile",
                         default = "/content/SlowFast-Network-pytorch/yolov3.weights", type = str)
@@ -133,11 +140,13 @@ if __name__ == '__main__':
     
     bbox_attrs = 5 + num_classes
     
+    #change the path accordingly
     print("Loading network.....")
     model = Darknet("/content/SlowFast-Network-pytorch/cfg/yolov3.cfg")
     model.load_weights("/content/SlowFast-Network-pytorch/yolov3.weights")
     print("Network successfully loaded")
     
+    #change the path accordingly
     print("load deep sort network....")
     deepsort = DeepSort("/content/SlowFast-Network-pytorch/deep/checkpoint/ckpt.t7")
     print("Deep Sort Network successfully loaded")
@@ -156,7 +165,8 @@ if __name__ == '__main__':
     model.eval()
 
     #######for sp detec##########
-    #初始化模型
+
+    #Initialize the model and change the path for the weights accordingly
     path_to_checkpoint = "/content/SlowFast-Network-pytorch/slowfast_weight.pth"
     backbone_name = Config.BACKBONE_NAME
     backbone = BackboneBase.from_name(backbone_name)()
@@ -166,18 +176,15 @@ if __name__ == '__main__':
                   rpn_post_nms_top_n=TrainConfig.RPN_POST_NMS_TOP_N).cuda()
     model_sf.load(path_to_checkpoint)
 
-
-    #videofile = "/home/aiuser/ava/ava/preproc_val/clips/rXFlJbXyZyc/948.mkv"
+    #Video file on which you want to run the model
     videofile = "/content/SlowFast-Network-pytorch/new.mp4"
     cap = cv2.VideoCapture(videofile)
     
     assert cap.isOpened(), 'Cannot capture source'
     
     frames = 0
-    ##########################################################
     last = np.array([])
     last_time = time.time()
-    ##########################################################
 
     start = time.time()
 
@@ -197,16 +204,12 @@ if __name__ == '__main__':
             f = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             # will resize frames if not already final size
             f = cv2.resize(frame, (resize_width, resize_height))
-            # buffer[sample_count] = frame
             f=normalize(f)
             buffer.append(f)
-            #print("len(buffer):",len(buffer))
             frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             print(frame_height,frame_width)
             scale = [resize_width / frame_width, resize_height / frame_height]
-            #print("info:",scale,resize_width,frame_width,resize_height,frame_height)
-
 
             img, orig_im, dim = prep_image(frame, inp_dim)
             
@@ -243,7 +246,6 @@ if __name__ == '__main__':
                 output[i, [1,3]] = torch.clamp(output[i, [1,3]], 0.0, im_dim[i,0])
                 output[i, [2,4]] = torch.clamp(output[i, [2,4]], 0.0, im_dim[i,1])
 
-##########################
             output = output.cpu().data.numpy()
             # print(output)
             bbox_xywh = output[:, 1:5]
@@ -252,81 +254,21 @@ if __name__ == '__main__':
 
             bbox_xywh[:, 0] = bbox_xywh[:, 0] + (bbox_xywh[:,2])/2
             bbox_xywh[:, 1] = bbox_xywh[:, 1] + (bbox_xywh[:, 3])/2
-
-############################
-            # bbox_xywh[:, 2] = bbox_xywh[:, 2] / bbox_xywh[:, 3]
-############################
-
             cls_conf = output[:, 5]
             cls_ids = output[:, 7]
-            # print(bbox_xywh, cls_conf, cls_ids)
 
             if bbox_xywh is not None:
                 mask = cls_ids == 0.0
                 bbox_xywh = bbox_xywh[mask]
-                # bbox_xywh[:, 3] *= 1.2
                 cls_conf = cls_conf[mask]
-
-                # print(mask, bbox_xywh, cls_conf, cls_ids)
-                #if bbox_xywh[0]==0 and bbox_xywh[1]==0 and bbox_xywh[2]==0 and bbox_xywh[3]==0:continue
-                #print("***********{}".format(bbox_xywh))
-                #cv2.imshow("debug",orig_im)
-                #cv2.waitKey(0)
                 outputs = deepsort.update(bbox_xywh, cls_conf, orig_im)
-#######################################################################################
-                # print('outputs = {}'.format(outputs))
-                # outputs = np.array(outputs)
-                #
-                # now_time = time.time()
-                # diff_time = now_time-last_time
-                # last_time = now_time
-                # print('diff_time = {}'.format(diff_time))
-                #
-                # distance = []
-                # speed = []
-                # # a = time.time()
-                # for i in range(outputs.shape[0]):
-                #     if last.shape[0] == 0:
-                #         last = np.array([np.insert(outputs[i], 5, [0])],dtype = 'float')
-                #         distance.append(0)
-                #         speed.append(0)
-                #
-                #     else:
-                #         if outputs[i][4] not in last[:, 4]:
-                #             last = np.vstack([last, np.array([np.insert(outputs[i], 5, [0])])])
-                #             distance.append(0)
-                #             speed.append(0)
-                #
-                #         else:
-                #             index = np.where(last[:, 4] == outputs[i][4])[0][0]
-                #             center1 = np.array(
-                #                 [(outputs[i][2] + outputs[i][0]) / 2, (outputs[i][1] + outputs[i][3]) / 2])
-                #             center2 = np.array(
-                #                 [(last[index][2] + last[index][0]) / 2, (last[index][1] + last[index][3]) / 2])
-                #             # print(center1 - center2)
-                #             move = np.sqrt(np.sum((center1 - center2) * (center1 - center2)))
-                #             # print(move)
-                #             last[index][:4] = outputs[i][:4]
-                #             last[index][-1] += move
-                #             distance.append(last[index][-1])
-                #             speed.append(move/diff_time)
-                # # print('diff = {}'.format(time.time()-a))
-                # print('speed = {}'.format(speed))
-                # print('last = {}'.format(last))
-                # print('distance = {}'.format(distance))
 
-#########################################################################################
                 if len(outputs) > 0:
                     bbox_xyxy = outputs[:, :4]
                     identities = outputs[:, -1]
-                    #print("out_info:",bbox_xyxy,identities)
-                    # ori_im = draw_bboxes(orig_im, bbox_xyxy, identities, offset=(0, 0))
-                    #################################################################################################
-                    #ori_im = draw_bboxes(orig_im, bbox_xyxy, identities, distance, speed, offset=(0, 0))
-                    ##################################################################################################
+
             if len(buffer)==64:
                 if count%3==0:
-                    #把buffer转为tensor
                     b=buffer
                     a = time.time()
                     b=np.array(b,dtype=np.float32)
@@ -334,32 +276,24 @@ if __name__ == '__main__':
                     b = to_tensor(b)
 
                     image_batch=torch.tensor(b, dtype=torch.float).unsqueeze(0).cuda()
-                    #把bbox转为tensor
                     bbox_xyxy=np.array(bbox_xyxy,dtype=np.float)
                     bbox_xyxy[:, [0, 2]] *= scale[0]
                     bbox_xyxy[:, [1, 3]] *= scale[1]
                     detector_bboxes=torch.tensor(bbox_xyxy, dtype=torch.float).unsqueeze(0).cuda()
-                    #模型forward
 
                     with torch.no_grad():
                         detection_bboxes, detection_classes, detection_probs = \
                             model_sf.eval().forward(image_batch, detector_bboxes_batch=detector_bboxes)
 
-
                     detection_bboxes=np.array(detection_bboxes.cpu())
                     detection_classes=np.array(detection_classes)
                     detection_probs=np.array(detection_probs)
-                    #得到对应的分类标签
+                    #Get the corresponding classification label
                     detection_bboxes[:, [0, 2]] /= scale[0]
                     detection_bboxes[:, [1, 3]] /= scale[1]
                 imshow(detection_bboxes,detection_classes,detection_probs,identities,count)
                 count += 1
 
-
-            # classes = load_classes('data/coco.names')
-            # colors = pkl.load(open("pallete", "rb"))
-            #
-            # list(map(lambda x: write(x, orig_im), output))
 
             #cv2.imshow("frame", orig_im)
             key = cv2.waitKey(0)
