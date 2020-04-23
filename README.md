@@ -20,20 +20,32 @@ As mentioned in the original repo, this gives a real time activity detection by 
 
 6.Run video_demo.py.
 
-# A quick way to view the results
-Just open this notebook and you can play around[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vaib-saxena/Slow-Fast-pytorch-implementation/blob/master/slow_fast.ipynb)
+# Colab notebook
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vaib-saxena/Slow-Fast-pytorch-implementation/blob/master/slow_fast.ipynb)
 
 
 # Dependencies
-python 3 (python2 not sure)
-numpy
-scipy
-opencv-python
-torch >= 1.0.0
-torchvision = 0.2.1
-youtube-dl
-ffmpeg
+- python 3 (python2 not sure)
+- numpy
+- scipy
+- opencv-python
+- torch >= 1.0.0
+- torchvision = 0.2.1
+- youtube-dl
+- ffmpeg
 
 
 # Reference
-https://github.com/MagicChuyi/SlowFast-Network-pytorch
+- paper: [Slow Fast Networks](https://arxiv.org/pdf/1812.03982.pdf)
+
+- code: [facebookresearch/SlowFast](https://github.com/facebookresearch/SlowFast)
+
+- https://github.com/MagicChuyi/SlowFast-Network-pytorch
+
+- paper: [Simple Online and Realtime Tracking with a Deep Association Metric](https://arxiv.org/abs/1703.07402)
+
+- code: [nwojke/deep_sort](https://github.com/nwojke/deep_sort)
+
+- paper: [YOLOv3](https://pjreddie.com/media/files/papers/YOLOv3.pdf)
+
+- code: [Joseph Redmon/yolov3](https://pjreddie.com/darknet/yolo/)
