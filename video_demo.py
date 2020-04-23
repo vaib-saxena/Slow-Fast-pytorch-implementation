@@ -21,14 +21,14 @@ from config.config import Config
 from model import Model
 
 def index2class():
-    file_path = '/content/SlowFast-Network-pytorch/ava/ava_action_list_v2.0.csv'
+    file_path = '/content/Slow-Fast-pytorch-implementation/ava/ava_action_list_v2.0.csv'
     with open(file_path) as f:
         i2c_dic = {line.split(',')[0]: line.split(',')[1] for line in f}
     return i2c_dic
 
 
 def get_test_input(input_dim, CUDA):
-    img = cv2.imread("/content/SlowFast-Network-pytorch/imgs/dog.jpg")
+    img = cv2.imread("/content/Slow-Fast-pytorch-implementation/imgs/dog.jpg")
     img = cv2.resize(img, (input_dim, input_dim)) 
     img_ =  img[:,:,::-1].transpose((2,0,1))
     img_ = img_[np.newaxis,:,:,:]/255.0
@@ -92,7 +92,7 @@ def imshow(bboxes, labels, probs,ids,count):
                         0.5, (0, 255, 255), 1, False)
 
         #you can change the output folder for saving the frames
-        cv2.imwrite('/content/SlowFast-Network-pytorch/outputs/frames/%d.jpg' % count, frame)
+        cv2.imwrite('/content/Slow-Fast-pytorch-implementation/outputs/frames/%d.jpg' % count, frame)
 
 def arg_parse():
     """
@@ -106,7 +106,7 @@ def arg_parse():
    	#change the video path accordingly
     parser.add_argument("--video", dest = 'video', help = 
                         "Video to run detection upon",
-                        default = "/content/SlowFast-Network-pytorch/new.mp4", type = str)
+                        default = "/content/Slow-Fast-pytorch-implementation/new.mp4", type = str)
     parser.add_argument("--dataset", dest = "dataset", help = "Dataset on which the network has been trained", default = "pascal")
     parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.5)
     parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
@@ -114,12 +114,12 @@ def arg_parse():
     #change the path accordingly
     parser.add_argument("--cfg", dest = 'cfgfile', help = 
                         "Config file",
-                        default = "/content/SlowFast-Network-pytorch/cfg/yolov3.cfg", type = str)
+                        default = "/content/Slow-Fast-pytorch-implementation/cfg/yolov3.cfg", type = str)
     
     #change the path accordingly
     parser.add_argument("--weights", dest = 'weightsfile', help = 
                         "weightsfile",
-                        default = "/content/SlowFast-Network-pytorch/yolov3.weights", type = str)
+                        default = "/content/Slow-Fast-pytorch-implementation/yolov3.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
                         default = "416", type = str)
@@ -142,13 +142,13 @@ if __name__ == '__main__':
     
     #change the path accordingly
     print("Loading network.....")
-    model = Darknet("/content/SlowFast-Network-pytorch/cfg/yolov3.cfg")
-    model.load_weights("/content/SlowFast-Network-pytorch/yolov3.weights")
+    model = Darknet("/content/Slow-Fast-pytorch-implementation/cfg/yolov3.cfg")
+    model.load_weights("/content/Slow-Fast-pytorch-implementation/yolov3.weights")
     print("Network successfully loaded")
     
     #change the path accordingly
     print("load deep sort network....")
-    deepsort = DeepSort("/content/SlowFast-Network-pytorch/deep/checkpoint/ckpt.t7")
+    deepsort = DeepSort("/content/Slow-Fast-pytorch-implementation/deep/checkpoint/ckpt.t7")
     print("Deep Sort Network successfully loaded")
 
     model.net_info["height"] = args.reso
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     #######for sp detec##########
 
     #Initialize the model and change the path for the weights accordingly
-    path_to_checkpoint = "/content/SlowFast-Network-pytorch/slowfast_weight.pth"
+    path_to_checkpoint = "/content/Slow-Fast-pytorch-implementation/slowfast_weight.pth"
     backbone_name = Config.BACKBONE_NAME
     backbone = BackboneBase.from_name(backbone_name)()
     model_sf = Model(backbone, 81, pooler_mode=Config.POOLER_MODE,
@@ -177,7 +177,7 @@ if __name__ == '__main__':
     model_sf.load(path_to_checkpoint)
 
     #Video file on which you want to run the model
-    videofile = "/content/SlowFast-Network-pytorch/new.mp4"
+    videofile = "/content/Slow-Fast-pytorch-implementation/new.mp4"
     cap = cv2.VideoCapture(videofile)
     
     assert cap.isOpened(), 'Cannot capture source'
