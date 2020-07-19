@@ -107,9 +107,10 @@ def imshow(bboxes, labels, probs,ids,count):
         column_names = ['Frame', 'Person ID', 'Probability', 'Action Class']
         data = np.array(para)
         my_df = pd.DataFrame(data, columns=column_names)
-        my_df.to_csv('/content/drive/My Drive/file_name.csv')
+        #you can change the output folder for saving the csv
+        my_df.to_csv('/content/drive/My Drive/Activity_CSV.csv')
         #you can change the output folder for saving the frames
-        cv2.imwrite('/content/drive/My Drive/outputs/frames/%d.jpg' % count, frame)
+        cv2.imwrite('/content/drive/My Drive/Activity_Outputs/frames/%d.jpg' % count, frame)
 
 def arg_parse():
     """
