@@ -121,7 +121,7 @@ def arg_parse():
 
     parser = argparse.ArgumentParser(description='YOLO v3 Video Detection Module')
 
-   	#change the video path accordingly
+      #change the video path accordingly
     parser.add_argument("--video", dest = 'video', help =
                         "Video to run detection upon",
                         default = "/content/Slow-Fast-pytorch-implementation/new.mp4", type = str)
@@ -146,7 +146,7 @@ def arg_parse():
 
 if __name__ == '__main__':
     args = arg_parse()
-    confidence = float("0.5")
+    confidence = float(args.confidence)
     nms_thesh = float("0.4")
     start = 0
 
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     model_sf.load(path_to_checkpoint)
 
     #Video file on which you want to run the model
-    videofile = "/content/Slow-Fast-pytorch-implementation/new.mp4"
+    videofile = args.video
     cap = cv2.VideoCapture(videofile)
 
     assert cap.isOpened(), 'Cannot capture source'
