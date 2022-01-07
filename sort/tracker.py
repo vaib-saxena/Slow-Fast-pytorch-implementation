@@ -68,7 +68,7 @@ class Tracker:
         matches, unmatched_tracks, unmatched_detections = \
             self._match(detections)
 ##############################################
-        print('match = {}'.format(matches))
+        #print('match = {}'.format(matches))
 ###############################################
         # Update track set.
         for track_idx, detection_idx in matches:
