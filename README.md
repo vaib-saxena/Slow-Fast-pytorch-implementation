@@ -1,11 +1,6 @@
 # Slow-Fast-pytorch-implementation with Colab notebook
 ![](data/pam.gif)
 
-This is just a cleaned up and workable verison of the repo shared here https://github.com/MagicChuyi/SlowFast-Network-pytorch that was missing weights and had few bugs. I intend to make some changes as I proceed. 
-
-As mentioned in the original repo, this gives a real time activity detection by detecting using YOLOv3, tracking using DeepSORT and activity detection using Slow Fast.
-
-
 # Run the demo on your own data
 
 1.Clone the repository: git clone https://github.com/vaib-saxena/Slow-Fast-pytorch-implementation.git
